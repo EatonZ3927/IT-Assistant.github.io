@@ -1,1 +1,1 @@
-# IT-Assistant.github.io
+# it-assistant.github.io
