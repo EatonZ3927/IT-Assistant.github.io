@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>IT Assistant Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17408B",
+                        "status-red": "#C9082A",
+                        "brand-red": "#C9082A",
+                        "accent-red": "#C9082A",
+                        "background-light": "#ffffff",
+                        "card-light": "#f8f9fa",
+                        "border-light": "#e5e7eb",
+                        "text-main": "#1d428a",
+                        "text-secondary": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "Noto Sans SC", "sans-serif"],
+                        "sans": ["Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "md": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #17408B 0%, #C9082A 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent; /* 如果需要文字透明效果 */
+            -webkit-text-fill-color: transparent;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .page {
+            display: none;
+        }
+        .active-page {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-[#111418] font-display overflow-hidden selection:bg-primary selection:text-white">
+    <div class="flex h-screen w-full relative">
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity opacity-0" onclick="toggleSidebar()"></div>
+        
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 overflow-y-auto scrollbar-hide transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static">
+            <div class="flex flex-col p-6">
+                <div class="flex items-center gap-3 px-2 py-6 mb-4">
+                    <div class="flex flex-col">
+                        <h1 class="text-primary text-3xl font-bold leading-none tracking-tight" id="live-date">2023年10月27日</h1>
+                        <h2 class="text-status-red text-2xl font-bold leading-none tracking-tight mt-1 tabular-nums" id="live-time">12:00:00</h2>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-4">
+                    <a class="flex items-center gap-5 px-6 py-5 rounded-xl bg-primary text-white shadow-md shadow-primary/20 group transition-all" href="#" data-page="overview">
+                        <span class="material-symbols-outlined text-3xl">dashboard</span>
+                        <p class="text-xl font-bold tracking-wide">概览</p>
+                    </a>
+                    <a class="flex items-center gap-5 px-6 py-5 rounded-xl text-gray-600 hover:bg-primary hover:text-white transition-colors group" href="#" data-page="tools">
+                        <span class="material-symbols-outlined text-3xl transition-colors">construction</span>
+                        <p class="text-xl font-medium">IT实用工具</p>
+                    </a>
+                    <a class="flex items-center gap-5 px-6 py-5 rounded-xl text-gray-600 hover:bg-primary hover:text-white transition-colors group" href="#" data-page="knowledge">
+                        <span class="material-symbols-outlined text-3xl transition-colors">psychology</span>
+                        <p class="text-xl font-medium">IT知识库</p>
+                    </a>
+                    <a class="flex items-center gap-5 px-6 py-5 rounded-xl text-gray-600 hover:bg-primary hover:text-white transition-colors group" href="#" data-page="training">
+                        <span class="material-symbols-outlined text-3xl transition-colors">menu_book</span>
+                        <p class="text-xl font-medium">IT培训相关</p>
+                    </a>
+                    <a class="flex items-center gap-5 px-6 py-5 rounded-xl text-gray-600 hover:bg-primary hover:text-white transition-colors group" href="#" data-page="news">
+                        <span class="material-symbols-outlined text-3xl transition-colors">lightbulb</span>
+                        <p class="text-xl font-medium">IT近期动态</p>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <main class="flex-1 h-full overflow-y-auto relative flex flex-col bg-white">
+            <!-- Mobile Header -->
+            <div class="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0 z-30 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-600">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <span class="font-bold text-primary text-lg">IT 小助手</span>
+                </div>
+                <div class="text-xs text-gray-500 font-medium" id="mobile-date-display"></div>
+            </div>
+
+            <div class="absolute inset-0 opacity-[0.4] pointer-events-none" style="background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 24px 24px;"></div>
+            
+            <!-- Overview Page -->
+            <div id="overview" class="page active-page">
+                <div class="max-w-[1600px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-8 z-10">
+                    <header class="flex flex-col gap-8 pt-2">
+                        <div class="flex flex-col gap-4 w-full">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-[#17408B] leading-tight whitespace-normal md:whitespace-nowrap overflow-hidden text-ellipsis">
+                                你好，我是 <span class="brand-gradient-text">IT 小助手</span>
+                            </h1>
+                            <div class="flex flex-col text-gray-500 text-base md:text-xl font-medium gap-1 mt-2">
+                                <p>今天你想了解什么IT知识呢？ 这里是最全最新的IT集合库！</p>
+                            </div>
+                        </div>
+                        <div class="w-full">
+                            <div class="relative w-full h-14 md:h-[68px] flex items-center bg-gray-50 border border-gray-200 rounded-xl shadow-sm group focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden">
+                                <div class="pl-6 flex items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-2xl text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                                </div>
+                                <input class="flex-1 w-full h-full bg-transparent border-0 text-gray-900 text-base md:text-xl px-4 focus:ring-0 placeholder:text-gray-400 leading-snug" placeholder="搜索IT知识" type="text"/>
+                                <button class="h-full bg-primary hover:bg-blue-800 text-white text-base md:text-lg font-bold px-6 md:px-12 transition-colors flex items-center justify-center flex-shrink-0 tracking-wide">
+                                    发送/搜索
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    <section class="flex flex-col flex-1 pb-8 mt-4">
+                        <div class="flex items-center gap-6 mb-6 border-b border-gray-200 pb-1">
+                            <h2 class="text-[#17408B] text-lg md:text-xl font-bold flex items-center gap-2 pb-3 border-b-4 border-status-red">
+                                <span class="material-symbols-outlined text-2xl">grid_view</span>
+                                IT实用工具
+                            </h2>
+                            <h2 class="text-gray-400 text-lg md:text-xl font-medium flex items-center gap-2 pb-3 hover:text-[#17408B] cursor-pointer transition-colors">
+                                <span class="material-symbols-outlined text-2xl">star</span>
+                                收藏夹
+                            </h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                    <span class="material-symbols-outlined text-2xl">install_desktop</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-primary transition-colors">常用软件库</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">常用办公软件一键部署与版本管理。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">desktop</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100">
+                                    <span class="material-symbols-outlined text-2xl">memory</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-status-red transition-colors">硬件常见问题</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">CPU、内存、硬盘健康状态检测工具。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-1.5 py-0.5 rounded border border-red-100">hardware</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                    <span class="material-symbols-outlined text-2xl">router</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-primary transition-colors">网络常见问题</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">IP配置检查、Ping测试与DNS刷新。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">network</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                    <span class="material-symbols-outlined text-2xl">desktop_windows</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-primary transition-colors">Windows OS专题</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">WindowsOS相关系统功能和使用技巧。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Windows OS</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100">
+                                    <span class="material-symbols-outlined text-2xl">laptop_mac</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-status-red transition-colors">MacOS专题</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">MacOS相关系统功能和使用技巧。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-1.5 py-0.5 rounded border border-red-100">MacOS</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                    <span class="material-symbols-outlined text-2xl">print</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-primary transition-colors">打印机设置</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">网络打印机驱动安装与连接排错。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">printer</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                    <span class="material-symbols-outlined text-2xl">screen_share</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-primary transition-colors">共享盘访问</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">快速访问共享盘的各个地址。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">access online</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red cursor-pointer text-xl">arrow_outward</span>
+                                </div>
+                                <div class="size-10 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100">
+                                    <span class="material-symbols-outlined text-2xl">shield</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-base font-bold leading-tight group-hover:text-status-red transition-colors">安全防护</h3>
+                                    <p class="text-gray-500 text-xs font-normal mt-1 leading-relaxed">最新最全的企业级安全防护小知识。</p>
+                                </div>
+                                <div class="mt-auto pt-1">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-1.5 py-0.5 rounded border border-red-100">security</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- News Page -->
+            <div id="news" class="page">
+                <div class="max-w-[1600px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-6 z-10">
+                    <header class="flex flex-col gap-6 pt-2">
+                        <nav class="flex text-gray-500 text-sm font-medium items-center gap-2">
+                            <a class="hover:text-primary transition-colors flex items-center gap-1 group" href="#" data-page="overview">
+                                <span class="material-symbols-outlined text-lg text-gray-400 group-hover:text-primary transition-colors">arrow_back</span>
+                                返回概览
+                            </a>
+                            <span class="text-gray-300">/</span>
+                            <span class="text-primary font-semibold">IT近期动态</span>
+                        </nav>
+                        <div class="flex flex-col gap-4 w-full">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-primary leading-tight">
+                                IT近期动态
+                            </h1>
+                            <p class="text-gray-500 text-lg font-medium max-w-2xl">
+                                随时掌握IT部门的最新公告、系统维护计划、安全警报及重要项目更新。
+                            </p>
+                        </div>
+                        <div class="w-full">
+                            <div class="relative w-full h-14 md:h-[64px] flex items-center bg-gray-50 border border-gray-200 rounded-xl shadow-sm group focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden">
+                                <div class="pl-6 flex items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-2xl text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                                </div>
+                                <input class="flex-1 w-full h-full bg-transparent border-0 text-gray-900 text-base md:text-xl px-4 focus:ring-0 placeholder:text-gray-400 leading-snug" placeholder="搜索近期动态 (例如: 系统维护, 安全警报...)" type="text"/>
+                                <button class="h-full bg-primary hover:bg-blue-800 text-white text-base md:text-lg font-bold px-6 md:px-10 transition-colors flex items-center justify-center flex-shrink-0 tracking-wide">
+                                    搜索动态
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    <section class="flex flex-col flex-1 pb-8 mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-accent-red hover:shadow-lg hover:shadow-accent-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-accent-red text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-accent-red group-hover:text-white transition-colors text-accent-red border border-red-100">
+                                        <span class="material-symbols-outlined text-3xl">schedule</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-accent-red transition-colors">10月 27日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-accent-red transition-colors mb-2">系统维护计划通知</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        本周末（10月28日-29日）将对核心ERP服务器进行季度例行维护，期间财务和库存模块将暂停服务，请提前安排工作。
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-accent-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">MAINTENANCE</span>
+                                    <span class="text-[10px] font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-semibold tracking-wide">SYSTEM</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                        <span class="material-symbols-outlined text-3xl">new_releases</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-primary transition-colors">10月 26日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors mb-2">新版办公软件推广通知</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        Office 365 ProPlus 最新版本将于下周一自动推送到所有员工电脑。新版本包含多项协作功能更新，请确保您的设备连接至内网。
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">SOFTWARE</span>
+                                    <span class="text-[10px] font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-semibold tracking-wide">UPDATE</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-accent-red hover:shadow-lg hover:shadow-accent-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-accent-red text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-accent-red group-hover:text-white transition-colors text-accent-red border border-red-100">
+                                        <span class="material-symbols-outlined text-3xl">phishing</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-accent-red transition-colors">10月 25日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-accent-red transition-colors mb-2">安全警报：钓鱼邮件攻击</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        紧急提醒：近期发现多起伪装成人力资源部门发放福利的钓鱼邮件。请勿点击陌生链接或下载未知附件，遇到可疑邮件请立即通过举报按钮反馈。
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-accent-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">SECURITY</span>
+                                    <span class="text-[10px] font-mono text-accent-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">URGENT</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                        <span class="material-symbols-outlined text-3xl">newspaper</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-primary transition-colors">10月 24日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors mb-2">IT部门季度动态 - FY26 Q1</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        本期看点：FY26 Q1 IT支持服务重点内容、AI数据安全策略详解、以及FY26年度IT设备更新计划的政策前瞻
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">NEWSLETTER</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                        <span class="material-symbols-outlined text-3xl">rocket_launch</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-primary transition-colors">10月 20日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors mb-2">Win11系统版本升级项目圆满完成</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        经过三个月的测试与阶段性升级，Win11系统升级计划已于昨晚成功完成。新功能包括新系统的UI更新和新增系统功能。
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">PROJECT</span>
+                                    <span class="text-[10px] font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-semibold tracking-wide">SUCCESS</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_outward</span>
+                                </div>
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100">
+                                        <span class="material-symbols-outlined text-3xl">laptop_chromebook</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-primary transition-colors">10月 15日</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors mb-2">笔记本电脑硬件升级公告</h3>
+                                    <p class="text-gray-500 text-base font-normal leading-relaxed line-clamp-3">
+                                        针对入职满三年且目前使用特定型号的员工，IT部门将分批次安排内存升级至32GB的服务。请留意邮件通知的具体时间表。
+                                    </p>
+                                </div>
+                                <div class="mt-auto pt-4 flex items-center gap-2">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">HARDWARE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Tools Page -->
+            <div id="tools" class="page">
+                <div class="max-w-[1600px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-6 z-10">
+                    <header class="flex flex-col gap-6 pt-2">
+                        <nav class="flex text-gray-500 text-sm font-medium items-center gap-2">
+                            <a class="hover:text-primary transition-colors flex items-center gap-1 group" href="#" data-page="overview">
+                                <span class="material-symbols-outlined text-lg text-gray-400 group-hover:text-primary transition-colors">arrow_back</span>
+                                返回概览
+                            </a>
+                            <span class="text-gray-300">/</span>
+                            <span class="text-primary font-semibold">IT实用工具</span>
+                        </nav>
+                        <div class="flex flex-col gap-4 w-full">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#17408B] leading-tight">
+                                IT实用工具
+                            </h1>
+                            <p class="text-gray-500 text-lg font-medium max-w-2xl">
+                                快速访问常用的系统维护、故障排查与办公辅助工具。
+                            </p>
+                        </div>
+                        <div class="w-full">
+                            <div class="relative w-full h-14 md:h-[64px] flex items-center bg-gray-50 border border-gray-200 rounded-xl shadow-sm group focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden">
+                                <div class="pl-6 flex items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-2xl text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                                </div>
+                                <input class="flex-1 w-full h-full bg-transparent border-0 text-gray-900 text-base md:text-xl px-4 focus:ring-0 placeholder:text-gray-400 leading-snug" placeholder="搜索工具 (例如: 系统清理, 密码重置...)" type="text"/>
+                                <button class="h-full bg-primary hover:bg-blue-800 text-white text-base md:text-lg font-bold px-6 md:px-10 transition-colors flex items-center justify-center flex-shrink-0 tracking-wide">
+                                    搜索工具
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    <section class="flex flex-col flex-1 pb-8 mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">cleaning_services</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">系统清理</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">一键清理系统临时文件、缓存和回收站，释放磁盘空间。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">MAINTENANCE</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">app_registration</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-brand-red transition-colors">注册表修复</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">扫描并修复无效的注册表项，提升系统稳定性。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">SYSTEM</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">system_update</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">驱动更新</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">检测硬件驱动版本，支持批量下载与自动安装。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">HARDWARE</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">wifi_find</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">网络重置</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">重置 Winsock 和 TCP/IP 堆栈，解决无法上网问题。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">NETWORK</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">restore_page</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-brand-red transition-colors">文件恢复</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">深度扫描磁盘，尝试恢复误删除的文档和图片。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">DATA</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">drive_file_rename_outline</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">批量重命名</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">强大的文件名处理工具，支持正则替换和序号生成。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">UTILITY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">install_desktop</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">软件安装</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">常用办公软件一键静默部署，标准化装机。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">DEPLOY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">password</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-brand-red transition-colors">强密码生成器</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">自定义规则生成高强度随机密码，保障账户安全。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">SECURITY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">radio_button_checked</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-brand-red transition-colors">屏幕录制</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">轻量级屏幕录制工具，用于制作操作教程或记录故障。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">MEDIA</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">screen_share</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">共享盘访问</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">快速访问共享盘的各个地址。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">access online</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">print</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">打印机修复</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">自动清除打印队列堆积，重启打印服务。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">PERIPHERAL</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">open_in_new</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">storage</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">磁盘整理</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">分析磁盘碎片情况，优化读写速度。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">STORAGE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Knowledge Page -->
+            <div id="knowledge" class="page">
+                <div class="max-w-[1600px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-6 z-10">
+                    <header class="flex flex-col gap-6 pt-2">
+                        <nav class="flex text-gray-500 text-sm font-medium items-center gap-2">
+                            <a class="hover:text-primary transition-colors flex items-center gap-1 group" href="#" data-page="overview">
+                                <span class="material-symbols-outlined text-lg text-gray-400 group-hover:text-primary transition-colors">arrow_back</span>
+                                返回概览
+                            </a>
+                            <span class="text-gray-300">/</span>
+                            <span class="text-primary font-semibold">IT知识库</span>
+                        </nav>
+                        <div class="flex flex-col gap-4 w-full">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#17408B] leading-tight">
+                                IT知识库
+                            </h1>
+                            <p class="text-gray-500 text-lg font-medium max-w-2xl">
+                                浏览我们的综合指南、常见问题解答和故障排除手册，快速解决您遇到的技术问题。
+                            </p>
+                        </div>
+                        <div class="w-full">
+                            <div class="relative w-full h-14 md:h-[64px] flex items-center bg-gray-50 border border-gray-200 rounded-xl shadow-sm group focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden">
+                                <div class="pl-6 flex items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-2xl text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                                </div>
+                                <input class="flex-1 w-full h-full bg-transparent border-0 text-gray-900 text-base md:text-xl px-4 focus:ring-0 placeholder:text-gray-400 leading-snug" placeholder="搜索知识库文章..." type="text"/>
+                                <button class="h-full bg-primary hover:bg-blue-800 text-white text-base md:text-lg font-bold px-6 md:px-10 transition-colors flex items-center justify-center flex-shrink-0 tracking-wide">
+                                    搜索文章
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    <section class="flex flex-col flex-1 pb-8 mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">router</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">网络故障排除指南</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">解决无法连接互联网、Wi-Fi 信号弱或 VPN 连接中断的问题。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">NETWORK</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">help_center</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">软件常见问题</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">Adobe Creative Cloud, SAP, Salesforce 等常用企业软件的疑难解答。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">SOFTWARE</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">security</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-status-red transition-colors">信息安全协议</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">了解密码策略、数据加密标准及如何识别网络钓鱼邮件。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">SECURITY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">build</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">硬件维护手册</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">笔记本电脑、显示器及外设的基本保养与报修流程说明。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">HARDWARE</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">grid_view</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">Office 365 技巧</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">提高效率的 Word, Excel, PowerPoint 及 Teams 使用秘籍。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">PRODUCTIVITY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">gavel</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-status-red transition-colors">公司 IT 政策</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">员工技术资源使用规范、合规性要求及数据隐私声明。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">POLICY</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">vpn_key</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">VPN 设置指南</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">远程办公必备，如何在 Windows 和 Mac 上配置公司 VPN。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">ACCESS</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">mail</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">邮箱配置教程</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">在手机和个人电脑上设置公司 Outlook 邮箱的详细步骤。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">COMMUNICATION</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">print</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">打印机连接设置</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">添加网络打印机、安装驱动程序及扫描文件到邮箱的操作指南。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">PERIPHERAL</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">meeting_room</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">会议室设备指南</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">如何连接投影仪、使用视频会议系统及预订会议室。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">FACILITIES</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-status-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-status-red text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-status-red group-hover:text-white transition-colors text-status-red border border-red-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">badge</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-status-red transition-colors">新员工 IT 入职指引</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">领取设备、账号激活及首次登录系统的完整流程。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-status-red bg-red-50 px-2 py-1 rounded border border-red-100 font-semibold tracking-wide">ONBOARDING</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+                                <div class="absolute top-2 right-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-1">
+                                    <span class="material-symbols-outlined text-3xl">cloud_sync</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-lg font-bold leading-tight group-hover:text-primary transition-colors">数据备份策略</h3>
+                                    <p class="text-gray-500 text-sm font-normal mt-1.5 leading-relaxed">如何使用 OneDrive 和本地服务器备份重要文件，防止数据丢失。</p>
+                                </div>
+                                <div class="mt-auto pt-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2 py-1 rounded border border-blue-100 font-semibold tracking-wide">STORAGE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Training Page -->
+            <div id="training" class="page">
+                <div class="max-w-[1600px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-6 z-10">
+                    <header class="flex flex-col gap-6 pt-2">
+                        <nav class="flex text-gray-500 text-sm font-medium items-center gap-2">
+                            <a class="hover:text-primary transition-colors flex items-center gap-1 group" href="#" data-page="overview">
+                                <span class="material-symbols-outlined text-lg text-gray-400 group-hover:text-primary transition-colors">arrow_back</span>
+                                返回概览
+                            </a>
+                            <span class="text-gray-300">/</span>
+                            <span class="text-primary font-semibold">IT培训相关</span>
+                        </nav>
+                        <div class="flex flex-col gap-4 w-full">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#17408B] leading-tight">
+                                IT培训相关
+                            </h1>
+                            <p class="text-gray-500 text-lg font-medium max-w-2xl">
+                                提供全面的IT技能培训、安全意识课程及系统操作指南，助力员工技能提升。
+                            </p>
+                        </div>
+                        <div class="w-full">
+                            <div class="relative w-full h-14 md:h-[64px] flex items-center bg-gray-50 border border-gray-200 rounded-xl shadow-sm group focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all overflow-hidden">
+                                <div class="pl-6 flex items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-2xl text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                                </div>
+                                <input class="flex-1 w-full h-full bg-transparent border-0 text-gray-900 text-base md:text-xl px-4 focus:ring-0 placeholder:text-gray-400 leading-snug" placeholder="搜索培训课程 (例如: Excel技巧, 网络安全...)" type="text"/>
+                                <button class="h-full bg-primary hover:bg-blue-800 text-white text-base md:text-lg font-bold px-6 md:px-10 transition-colors flex items-center justify-center flex-shrink-0 tracking-wide">
+                                    搜索课程
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    <section class="flex flex-col flex-1 pb-8 mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">school</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors">新员工IT入职培训</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">New Employee IT Orientation</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">为新入职员工提供全面的IT环境介绍，包括账号激活、软件安装、邮件设置及公司安全政策概览。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 font-bold tracking-wide">ONBOARDING</span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 45 Min</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-brand-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">shield</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-brand-red transition-colors">2026 网络安全意识培训</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">Cybersecurity Awareness 2024</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">年度必修课程。学习如何识别网络钓鱼、保护敏感数据、遵守数据隐私法规以及应对突发安全事件。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2.5 py-1 rounded border border-red-100 font-bold tracking-wide">SECURITY</span>
+                                    <span class="text-[10px] font-mono text-white bg-brand-red px-2 py-1 rounded font-bold tracking-wide">REQUIRED</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">table_chart</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors">Excel 高级应用工作坊</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">Advanced Excel Workshops</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">深入掌握数据透视表、VLOOKUP/XLOOKUP 函数、宏命令及数据可视化技巧，大幅提升办公效率。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 font-bold tracking-wide">SKILL</span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 90 Min</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">wifi_tethering</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors">远程办公最佳实践</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">Remote Work Best Practices</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">涵盖VPN稳定连接技巧、Zoom/Teams会议高效协作指南，以及居家办公设备的安全配置建议。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 font-bold tracking-wide">REMOTE</span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 30 Min</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-primary text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary border border-blue-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">support_agent</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors">IT 服务台基础知识</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">IT Service Desk Basics</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">学习如何正确提交IT工单、描述技术故障、使用自助服务门户以及了解服务级别协议(SLA)。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 font-bold tracking-wide">BASICS</span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 20 Min</span>
+                                </div>
+                            </div>
+                            <div class="group flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-6 hover:border-brand-red hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer h-full">
+                                <div class="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-gray-400 hover:text-brand-red text-xl">arrow_forward</span>
+                                </div>
+                                <div class="size-14 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-brand-red group-hover:text-white transition-colors text-brand-red border border-red-100 mb-2">
+                                    <span class="material-symbols-outlined text-3xl">workspace_premium</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-gray-900 text-xl font-bold leading-tight group-hover:text-brand-red transition-colors">系统管理员认证</h3>
+                                    <h4 class="text-gray-400 text-xs font-medium uppercase tracking-wider mt-1">System Admin Certification</h4>
+                                    <p class="text-gray-500 text-base font-normal mt-3 leading-relaxed">专为IT技术人员设计。包括高级系统配置、网络架构管理及服务器维护的专业认证课程。</p>
+                                </div>
+                                <div class="mt-auto pt-5 flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-brand-red bg-red-50 px-2.5 py-1 rounded border border-red-100 font-bold tracking-wide">CERTIFICATION</span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 12 Hours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Network Reset Module Page -->
+    <div id="network-reset" class="page">
+        <div class="max-w-[1200px] w-full mx-auto p-4 md:p-8 lg:p-10 flex flex-col gap-6 z-10">
+            <header class="flex flex-col gap-6 pt-2">
+                <nav class="flex text-gray-500 text-sm font-medium items-center gap-2">
+                    <a class="hover:text-primary transition-colors flex items-center gap-1 group" href="#" data-page="tools">
+                        <span class="material-symbols-outlined text-lg text-gray-400 group-hover:text-primary transition-colors">arrow_back</span>
+                        返回工具
+                    </a>
+                    <span class="text-gray-300">/</span>
+                    <span class="text-primary font-semibold">网络重置</span>
+                </nav>
+                <div class="flex flex-col gap-4 w-full">
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#17408B] leading-tight">网络重置</h1>
+                    <p class="text-gray-500 text-lg font-medium max-w-2xl">一键重置网络设置（Winsock/TCP-IP）、清理 DNS 缓存，帮助快速恢复网络连接。</p>
+                </div>
+            </header>
+
+            <section class="flex flex-col flex-1 pb-8 mt-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-xl font-bold text-gray-900 mb-3">操作说明</h2>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2">
+                            <li>此操作将在本机执行 Winsock 重置、重设 TCP/IP 堆栈，并刷新 DNS 缓存。</li>
+                            <li>请确保您以管理员身份运行本机上对应的操作（此页面仅提供命令与说明）。</li>
+                            <li>执行前可尝试重新启动路由器或拔插网线以排查物理连接问题。</li>
+                        </ol>
+                        <div class="mt-4">
+                            <pre class="bg-gray-50 p-4 rounded border border-gray-100 text-sm text-gray-700">netsh winsock reset
+netsh int ip reset
+ipconfig /flushdns</pre>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-3">提示：将以上命令在具有管理员权限的命令提示符或 PowerShell 中逐行执行。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-xl font-bold text-gray-900 mb-3">检测与建议</h2>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>如果仍无法联网，请检查网卡驱动并尝试更新。</li>
+                            <li>确认没有代理或 VPN 影响网络路由。</li>
+                            <li>在企业环境下，联系网络管理员以确认 DHCP 与网关配置。</li>
+                        </ul>
+                    </div>
+
+                    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-xl font-bold text-gray-900 mb-3">修改主机名 (macOS)</h2>
+                        <p class="text-gray-600 mb-2">使用以下命令在 macOS 终端中快速修改计算机名称。</p>
+                        <div class="mt-4">
+                            <pre class="bg-gray-50 p-4 rounded border border-gray-100 text-sm text-gray-700 whitespace-pre-wrap break-all">my="Example"; sudo scutil --set ComputerName "$my"; sudo scutil --set LocalHostName "$my"; sudo scutil --set HostName "$my"</pre>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-3">提示：将 <span class="font-mono text-primary">my="Example"</span> 中的 Example 替换为新名称。</p>
+                    </div>
+
+                    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm flex gap-3 items-center">
+                        <button id="copy-network-commands" class="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-blue-800 transition-colors">复制命令到剪贴板</button>
+                        <button id="open-powershell" class="px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-50 transition-colors">打开 PowerShell（管理员）说明</button>
+                    </div>
+                    
+                    <!-- Modal: PowerShell 管理员说明 -->
+                    <div id="ps-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+                        <div class="bg-white w-full max-w-xl mx-4 rounded-xl p-6 shadow-lg">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-bold text-[#17408B]">以管理员身份打开 PowerShell</h3>
+                                <button id="ps-close" class="text-gray-400 hover:text-gray-600">关闭</button>
+                            </div>
+                            <div class="mt-4 text-gray-700 space-y-3">
+                                <p>以下为常见的在 Windows 上以管理员权限打开 PowerShell / Windows Terminal 的方法：</p>
+                                <ol class="list-decimal list-inside text-gray-600">
+                                    <li>按 <span class="font-mono px-1 py-0.5 bg-gray-100 rounded">Win</span> 键，输入 <span class="font-mono px-1 py-0.5 bg-gray-100 rounded">PowerShell</span>，右键选择“以管理员身份运行”。</li>
+                                    <li>或 按 <span class="font-mono px-1 py-0.5 bg-gray-100 rounded">Win+X</span>，选择“Windows 终端（管理员）”或“命令提示符（管理员）”。</li>
+                                    <li>在任务栏或开始菜单上找到 PowerShell，右键 -> 更多 -> 以管理员身份运行。</li>
+                                </ol>
+                                <p class="text-sm text-gray-500">提示：打开后，将复制的命令粘贴并回车执行。若被系统提示确认，请选择“是”。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+        // Date and time update function
+        function updateDateTime() {
+            const now = new Date();
+            const utcTime = now.getTime();
+            const offset = 8 * 60 * 60 * 1000;
+            const gmt8Date = new Date(utcTime + offset);
+            const year = gmt8Date.getUTCFullYear();
+            const month = String(gmt8Date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getUTCDate()).padStart(2, '0');
+            const formattedDate = `${year}年${month}月${day}日`;
+            const hours = String(gmt8Date.getUTCHours()).padStart(2, '0');
+            const minutes = String(gmt8Date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(gmt8Date.getUTCSeconds()).padStart(2, '0');
+            const formattedTime = `${hours}:${minutes}:${seconds}`;
+            const dateElement = document.getElementById('live-date');
+            const timeElement = document.getElementById('live-time');
+            const mobileDateElement = document.getElementById('mobile-date-display');
+            if(dateElement) {
+                dateElement.textContent = formattedDate;
+            }
+            if(timeElement) {
+                timeElement.textContent = formattedTime;
+            }
+            if(mobileDateElement) {
+                mobileDateElement.textContent = `${formattedDate}`;
+            }
+        }
+        
+        // Initialize date/time and set interval
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // Page navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('[data-page]');
+            const pages = document.querySelectorAll('.page');
+            
+            // Set overview as the default active page
+            pages.forEach(page => {
+                page.classList.remove('active-page');
+            });
+            document.getElementById('overview').classList.add('active-page');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetPageId = this.getAttribute('data-page');
+                    
+                    // Hide all pages
+                    pages.forEach(page => {
+                        page.classList.remove('active-page');
+                    });
+                    
+                    // Show the target page
+                    document.getElementById(targetPageId).classList.add('active-page');
+                    
+                    // Update active state in sidebar: clear highlights and highlight the matching sidebar link
+                    // Remove classes from all elements with data-page to avoid stray highlights
+                    document.querySelectorAll('[data-page]').forEach(l => l.classList.remove('bg-primary', 'text-white'));
+
+                    // Try to find sidebar link corresponding to the target page and highlight it
+                    const sidebarLink = document.querySelector('aside [data-page="' + targetPageId + '"]');
+                    if (sidebarLink) {
+                        sidebarLink.classList.add('bg-primary', 'text-white');
+                    } else {
+                        // Fallback: try to highlight the parent category in sidebar (e.g., tools)
+                        const parentSidebar = document.querySelector('aside [data-page="tools"]');
+                        if (parentSidebar) {
+                            parentSidebar.classList.add('bg-primary', 'text-white');
+                        } else {
+                            // Final fallback: highlight the clicked element
+                            this.classList.add('bg-primary', 'text-white');
+                        }
+                    }
+                });
+            });
+
+            // 搜索过滤逻辑：为每个页面的搜索输入添加实时过滤模块的功能
+            function setupSearchForPage(pageId) {
+                const page = document.getElementById(pageId);
+                if (!page) return;
+
+                const input = page.querySelector('input[placeholder]');
+                if (!input) return;
+
+                // 尝试选中常见的模块项容器（.grid 下的 .group 卡片）
+                const cards = Array.from(page.querySelectorAll('.grid .group'));
+
+                // 如果没有找到以 .group 标记的卡片，尝试更通用的查找（直接查找子级 .group）
+                if (cards.length === 0) {
+                    const fallback = Array.from(page.querySelectorAll('.group'));
+                    fallback.forEach(c => cards.push(c));
+                }
+
+                input.addEventListener('input', function() {
+                    const q = this.value.trim().toLowerCase();
+
+                    if (q === '') {
+                        cards.forEach(c => c.style.display = '');
+                        return;
+                    }
+
+                    cards.forEach(c => {
+                        const text = (c.textContent || '').toLowerCase();
+                        if (text.indexOf(q) !== -1) {
+                            c.style.display = '';
+                        } else {
+                            c.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // 为已知页面启用搜索过滤
+            ['overview', 'news', 'tools', 'knowledge', 'training'].forEach(id => setupSearchForPage(id));
+
+            // 为新增的模块页面也启用搜索（即使通常模块页面内容不同）
+            setupSearchForPage('network-reset');
+
+            // 复制命令与模态交互逻辑
+            const copyBtn = document.getElementById('copy-network-commands');
+            const openPsBtn = document.getElementById('open-powershell');
+            const psModal = document.getElementById('ps-modal');
+            const psClose = document.getElementById('ps-close');
+
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 right-6 bg-[#17408B] text-white px-4 py-2 rounded-lg shadow-lg z-60';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
+            }
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    const pre = document.querySelector('#network-reset pre');
+                    const text = pre ? pre.textContent.trim() : 'netsh winsock reset\nnetsh int ip reset\nipconfig /flushdns';
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板')).catch(() => {
+                            showToast('复制失败，请手动复制');
+                        });
+                    } else {
+                        // 老旧浏览器回退
+                        const ta = document.createElement('textarea');
+                        ta.value = text;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        try { document.execCommand('copy'); showToast('已复制到剪贴板'); } catch(e) { showToast('复制失败，请手动复制'); }
+                        ta.remove();
+                    }
+                });
+            }
+
+            if (openPsBtn && psModal) {
+                openPsBtn.addEventListener('click', function() {
+                    psModal.classList.remove('hidden');
+                    psModal.classList.add('flex');
+                });
+            }
+
+            if (psClose && psModal) {
+                psClose.addEventListener('click', function() {
+                    psModal.classList.add('hidden');
+                    psModal.classList.remove('flex');
+                });
+            }
+        });
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Open
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10); // Fade in
+            } else {
+                // Close
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300); // Wait for fade out
+            }
+        }
+    </script>
+</body>
+</html>
